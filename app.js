@@ -1,4 +1,5 @@
 var usuarios = []
+
 // Auth class
 class Auth {
   // Static method to log in a user
@@ -67,15 +68,9 @@ class Person {
       const user = {name, email, password};
       
       Auth.login(user);
-      form.remove();
+      this.saveUser(user)
       alert('Usuario creado exitosamente');
     });
-  }
-
-  static pruebaArray(){
-    const nada = "nada"
-    usuarios.push(nada);
-    return usuarios
   }
 
   static validateRole(){
@@ -90,8 +85,10 @@ class Person {
 
   }
 
-  static saveUser(){
-    
+  static saveUser(user){
+    let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+    usuarios.push(user);
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
   }
 
 }
@@ -118,6 +115,5 @@ class Administrador extends Person{
 
 // Example usage
 
-// Person.registerUser();
+Person.registerUser();
 
-console.log(Person.pruebaArray());
