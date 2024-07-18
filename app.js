@@ -1,28 +1,25 @@
 // Auth class
 class Auth {
-  static login(user) {
-    const token = Auth.generateToken();
+  static generateToken() {
+    return Math.random().toString(36).substr(2);
+  }
+
+  static login(token) {
     localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
   }
 
   static logout() {
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  }
-
-  static generateToken() {
-    return Math.random().toString(36).substr(2);
   }
 }
 
 // Person class
 class Person {
-  constructor(name, email, password, role) {
+  constructor(name, email, password, role = 'regular') {
     this.name = name;
     this.email = email;
     this.password = password;
-    this.role = role || 'regular'; // Default role to 'regular'
+    this.role = role; 
   }
 
   async registerUser() {
@@ -53,52 +50,56 @@ class Person {
       const password = document.getElementById('password').value;
       const user = new Person(name, email, password);
   
-      Auth.login(user);
+      Auth.login(Auth.generateToken());
       this.saveUser(user);
-  
-      // Redirigir según el rol
-      switch (user.role) {
-        case 'regular':
-          window.location.href = 'usuarioRegular.html';
-          break;
-        case 'admin':
-          window.location.href = 'usuarioAdmin.html';
-          break;
-        default:
-          console.log('Invalid role');
-      }
+      this.validateRoleRedirect(user)
     });
   }
-  
 
+  validateRoleRedirect(user){
+    if(user.role === 'admin'){
+      window.location.href = 'userAdmin.html';
+    }else if(user.role === "regular"){
+      window.location.href = 'userRegular.html';
+    }
+    else{
+      alert("Usuario no valido")
+    }
+  }
+  
   saveUser(user) {
     let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
     usuarios.push(user);
     localStorage.setItem('usuarios', JSON.stringify(usuarios));
   }
+}
 
-  validateRole() {
-    switch (this.role) {
-      case 'regular':
-        this.registrarseComoUsuarioRegular();
-        break;
-      case 'admin':
-        this.crearUsuarioAdmin();
-        break;
-      default:
-        console.log('Invalid role');
-    }
+// Clase para usuario regular
+class UsuarioRegular extends Person {
+  constructor(name, email, password) {
+    super(name, email, password, 'regular');
   }
 
   registrarseComoUsuarioRegular() {
     console.log(`${this.name} se ha registrado como usuario regular`);
   }
+}
+
+// Clase para administrador
+class Administrador extends Person {
+  constructor(name, email, password) {
+    super(name, email, password, 'admin');
+  }
 
   crearUsuarioAdmin() {
-    console.log(`${this.name} ha creado un nuevo usuario admin`);
+    console.log(`${this.name} ha creado un nuevo usuario administrador`);
   }
 }
 
-// Example usage
-const user = new Person();
+// Ejemplo de uso
+const user = new UsuarioRegular();
 user.registerUser();
+
+const admin = new Administrador();
+admin.registerUser();  // Esto ejecutará el método registerUser() de Person
+admin.crearUsuarioAdmin();
