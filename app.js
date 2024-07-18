@@ -99,7 +99,3 @@ class Administrador extends Person {
 // Ejemplo de uso
 const user = new UsuarioRegular();
 user.registerUser();
-
-const admin = new Administrador();
-admin.registerUser();  // Esto ejecutará el método registerUser() de Person
-admin.crearUsuarioAdmin();
